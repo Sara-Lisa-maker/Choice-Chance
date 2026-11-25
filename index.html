@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Choice & Chance — Визуальные новеллы</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#0a0a0f;color:#e4e4e7;overflow-x:hidden}
+  
+  /* Анимации */
+  @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes slideIn{from{transform:translateX(-100%)}to{transform:translateX(0)}}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+  @keyframes glow{0%,100%{box-shadow:0 0 20px rgba(139,92,246,.3)}50%{box-shadow:0 0 40px rgba(139,92,246,.6)}}
+  
+  /* Страница входа */
+  .auth-container{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0a0a0f 0%,#1a1a2e 50%,#16213e 100%);position:relative;overflow:hidden}
+  .auth-container::before{content:'';position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(139,92,246,.15) 0%,transparent 70%);top:-200px;right:-200px;animation:pulse 4s ease-in-out infinite}
+  .auth-container::after{content:'';position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(59,130,246,.1) 0%,transparent 70%);bottom:-150px;left:-150px;animation:pulse 5s ease-in-out infinite}
+  
+  .auth-box{background:rgba(26,26,46,.8);backdrop-filter:blur(20px);border:1px solid rgba(139,92,246,.2);border-radius:24px;padding:48px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.5);animation:fadeIn .6s ease-out;position:relative;z-index:1}
+  .logo{font-size:32px;font-weight:700;background:linear-gradient(135deg,#8b5cf6,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;text-align:center}
+  .subtitle{color:#a1a1aa;text-align:center;margin-bottom:32px;font-size:14px}
+  
+  .input-group{margin-bottom:20px}
+  .input-group label{display:block;color:#a1a1aa;font-size:13px;margin-bottom:8px;font-weight:500}
+  .input-group input{width:100%;padding:14px 16px;background:rgba(15,15,25,.6);border:1px solid rgba(139,92,246,.3);border-radius:12px;color:#e4e4e7;font-size:15px;transition:all .3s}
+  .input-group input:focus{outline:none;border-color:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,.1)}
+  
+  .btn{width:100%;padding:14px;background:linear-gradient(135deg,#8b5cf6,#3b82f6);border:none;border-radius:12px;color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:all .3s;margin-top:8px}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(139,92,246,.4)}
+  .btn:active{transform:translateY(0)}
+  .btn-ghost{background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.3);margin-top:12px}
+  .btn-ghost:hover{background:rgba(139,92,246,.2)}
+  
+  .message{margin-top:16px;padding:12px;border-radius:8px;font-size:14px;text-align:center;display:none}
+  .message.error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#fca5a5;display:block}
+  .message.success{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#86efac;display:block}
+  
+  /* Главная страница */
+  .main-container{display:none;min-height:100vh;background:#0a0a0f}
+  .header{background:rgba(15,15,25,.8);backdrop-filter:blur(20px);border-bottom:1px solid rgba(139,92,246,.2);padding:16px 32px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100}
+  .header-logo{font-size:24px;font-weight:700;background:linear-gradient(135deg,#8b5cf6,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .header-right{display:flex;gap:16px;align-items:center}
+  
+  .crystals{display:flex;align-items:center;gap:8px;background:rgba(139,92,246,.1);padding:10px 16px;border-radius:12px;border:1px solid rgba(139,92,246,.3);cursor:pointer;transition:all .3s}
+  .crystals:hover{background:rgba(139,92,246,.2);transform:scale(1.05)}
+  .crystals-icon{font-size:20px}
+  .crystals-count{font-weight:600;font-size:16px}
+  
+  .user-menu{position:relative}
+  .user-btn{background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.3);padding:10px 16px;border-radius:12px;color:#e4e4e7;cursor:pointer;font-size:14px;font-weight:500;transition:all .3s}
+  .user-btn:hover{background:rgba(139,92,246,.2)}
+  
+  .content{max-width:1400px;margin:0 auto;padding:32px}
+  .section-title{font-size:28px;font-weight:700;margin-bottom:24px;background:linear-gradient(135deg,#8b5cf6,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  
+  .novels-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px}
+  .novel-card{background:rgba(26,26,46,.6);backdrop-filter:blur(10px);border:1px solid rgba(139,92,246,.2);border-radius:16px;overflow:hidden;cursor:pointer;transition:all .3s;animation:fadeIn .6s ease-out}
+  .novel-card:hover{transform:translateY(-8px);box-shadow:0 20px 40px rgba(139,92,246,.3);border-color:rgba(139,92,246,.5)}
+  
+  .novel-cover{width:100%;height:320px;background:linear-gradient(135deg,#1a1a2e,#16213e);position:relative;overflow:hidden}
+  .novel-cover::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(139,92,246,.3),rgba(59,130,246,.2));opacity:0;transition:opacity .3s}
+  .novel-card:hover .novel-cover::before{opacity:1}
+  .novel-cover-placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:48px;color:rgba(139,92,246,.5)}
+  
+  .novel-info{padding:20px}
+  .novel-title{font-size:18px;font-weight:600;margin-bottom:8px}
+  .novel-desc{color:#a1a1aa;font-size:14px;line-height:1.5;margin-bottom:12px}
+  .novel-meta{display:flex;gap:12px;font-size:13px;color:#8b5cf6}
+  
+  /* Модалка кристаллов */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(5px);z-index:1000;align-items:center;justify-content:center;animation:fadeIn .3s}
+  .modal-overlay.active{display:flex}
+  .modal{background:rgba(26,26,46,.95);backdrop-filter:blur(20px);border:1px solid rgba(139,92,246,.3);border-radius:24px;padding:32px;max-width:500px;width:90%;animation:fadeIn .3s}
+  .modal-title{font-size:24px;font-weight:700;margin-bottom:16px;text-align:center}
+  .modal-text{color:#a1a1aa;text-align:center;margin-bottom:24px;line-height:1.6}
+  
+  .claim-section{background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.2);border-radius:16px;padding:20px;margin-bottom:16px}
+  .claim-title{font-size:16px;font-weight:600;margin-bottom:8px}
+  .claim-timer{color:#8b5cf6;font-size:14px;margin-bottom:12px}
+  .claim-btn{width:100%;padding:12px;background:linear-gradient(135deg,#8b5cf6,#3b82f6);border:none;border-radius:12px;color:#fff;font-weight:600;cursor:pointer;transition:all .3s}
+  .claim-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 30px rgba(139,92,246,.4)}
+  .claim-btn:disabled{opacity:.5;cursor:not-allowed}
+  
+  .daily-section{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);border-radius:16px;padding:20px}
+  .daily-title{font-size:16px;font-weight:600;margin-bottom:8px}
+  .daily-info{color:#a1a1aa;font-size:14px;margin-bottom:12px}
+  .daily-btn{width:100%;padding:12px;background:linear-gradient(135deg,#3b82f6,#06b6d4);border:none;border-radius:12px;color:#fff;font-weight:600;cursor:pointer;transition:all .3s}
+  .daily-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 30px rgba(59,130,246,.4)}
+  .daily-btn:disabled{opacity:.5;cursor:not-allowed}
+  
+  .close-btn{position:absolute;top:16px;right:16px;background:none;border:none;color:#a1a1aa;font-size:24px;cursor:pointer;transition:color .3s}
+  .close-btn:hover{color:#e4e4e7}
+  
+  .notification{position:fixed;top:80px;right:32px;background:rgba(34,197,94,.9);color:#fff;padding:16px 24px;border-radius:12px;font-weight:600;animation:slideIn .3s;z-index:1001;display:none}
+  .notification.active{display:block}
+  
+  @media(max-width:768px){
+    .header{padding:12px 16px;flex-wrap:wrap;gap:12px}
+    .content{padding:16px}
+    .novels-grid{grid-template-columns:1fr}
+    .auth-box{padding:32px 24px;margin:16px}
+  }
+</style>
+</head>
+<body>
+
+<!-- СТРАНИЦА ВХОДА -->
+<div class="auth-container" id="authPage">
+  <div class="auth-box">
+    <div class="logo">Choice & Chance</div>
+    <div class="subtitle">Платформа визуальных новелл</div>
+    
+    <div class="input-group">
+      <label>Email</label>
+      <input type="email" id="email" placeholder="your@email.com">
+    </div>
+    
+    <div class="input-group">
+      <label>Пароль</label>
+      <input type="password" id="password" placeholder="Минимум 6 символов">
+    </div>
+    
+    <div class="input-group" id="nameGroup" style="display:none">
+      <label>Имя</label>
+      <input type="text" id="name" placeholder="Как тебя зовут?">
+    </div>
+    
+    <button class="btn" onclick="signIn()">Войти</button>
+    <button class="btn btn-ghost" onclick="toggleSignUp()">Создать аккаунт</button>
+    
+    <div class="message" id="authMessage"></div>
+  </div>
+</div>
+
+<!-- ГЛАВНАЯ СТРАНИЦА -->
+<div class="main-container" id="mainPage">
+  <div class="header">
+    <div class="header-logo">Choice & Chance</div>
+    <div class="header-right">
+      <div class="crystals" onclick="openCrystalsModal()">
+        <span class="crystals-icon">💎</span>
+        <span class="crystals-count" id="crystalsCount">0</span>
+      </div>
+      <div class="user-menu">
+        <button class="user-btn" onclick="signOut()">Выйти</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="content">
+    <h2 class="section-title">Доступные новеллы</h2>
+    <div class="novels-grid">
+      <div class="novel-card" onclick="openNovel('shadows-paris')">
+        <div class="novel-cover">
+          <div class="novel-cover-placeholder">🗼</div>
+        </div>
+        <div class="novel-info">
+          <div class="novel-title">Тени Парижа</div>
+          <div class="novel-desc">Мрачная история в нуарном Париже 1920-х. Раскройте тайны, скрытые в тенях города любви.</div>
+          <div class="novel-meta">
+            <span>📖 12 глав</span>
+            <span>⏱️ ~3 часа</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- МОДАЛКА КРИСТАЛЛОВ -->
+<div class="modal-overlay" id="crystalsModal">
+  <div class="modal" style="position:relative">
+    <button class="close-btn" onclick="closeCrystalsModal()">×</button>
+    <div class="modal-title">💎 Кристаллы</div>
+    <div class="modal-text">Получайте кристаллы за активность и ежедневный вход</div>
+    
+    <div class="claim-section">
+      <div class="claim-title">Бонус каждые 2 часа</div>
+      <div class="claim-timer" id="claimTimer">Доступно сейчас</div>
+      <button class="claim-btn" id="claimBtn" onclick="claimCrystals()">Забрать +5 💎</button>
+    </div>
+    
+    <div class="daily-section">
+      <div class="daily-title">Ежедневный бонус</div>
+      <div class="daily-info" id="dailyInfo">Войдите сегодня, чтобы получить награду</div>
+      <button class="daily-btn" id="dailyBtn" onclick="claimDaily()">Получить</button>
+    </div>
+  </div>
+</div>
+
+<div class="notification" id="notification"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://vaczwifqspuvsaxnlmjh.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_EWAtvKbMT1PohGHbv2Fikg_H62d6o1j';
+
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let currentUser = null;
+let userProfile = null;
+let isSignUp = false;
+
+const $ = id => document.getElementById(id);
+
+function showMessage(text, type) {
+  const msg = $('authMessage');
+  msg.textContent = text;
+  msg.className = `message ${type}`;
+}
+
+function toggleSignUp() {
+  isSignUp = !isSignUp;
+  $('nameGroup').style.display = isSignUp ? 'block' : 'none';
+  document.querySelector('.btn').textContent = isSignUp ? 'Зарегистрироваться' : 'Войти';
+  document.querySelector('.btn-ghost').textContent = isSignUp ? 'Уже есть аккаунт? Войти' : 'Создать аккаунт';
+}
+
+async function signIn() {
+  const email = $('email').value.trim();
+  const password = $('password').value;
+  
+  if (!email || !password) return showMessage('Заполните все поля', 'error');
+  if (password.length < 6) return showMessage('Пароль минимум 6 символов', 'error');
+  
+  const { error } = await db.auth.signInWithPassword({ email, password });
+  if (error) showMessage('Ошибка: ' + error.message, 'error');
+}
+
+async function signUp() {
+  const email = $('email').value.trim();
+  const password = $('password').value;
+  const name = $('name').value.trim() || email.split('@')[0];
+  
+  if (!email || !password) return showMessage('Заполните все поля', 'error');
+  if (password.length < 6) return showMessage('Пароль минимум 6 символов', 'error');
+  
+  const { error } = await db.auth.signUp({
+    email, password,
+    options: { data: { name } }
+  });
+  
+  if (error) return showMessage('Ошибка: ' + error.message, 'error');
+  showMessage('Аккаунт создан! Войдите.', 'success');
+  toggleSignUp();
+}
+
+async function signOut() {
+  await db.auth.signOut();
+}
+
+async function loadProfile() {
+  const { data, error } = await db.from('profiles').select('*').eq('id', currentUser.id).single();
+  if (error) {
+    console.error('Error loading profile:', error);
+    return;
+  }
+  userProfile = data;
+  $('crystalsCount').textContent = userProfile.crystals;
+  updateCrystalsUI();
+}
+
+async function claimCrystals() {
+  const now = new Date();
+  const lastClaim = userProfile.last_claim_time ? new Date(userProfile.last_claim_time) : null;
+  
+  if (lastClaim) {
+    const hoursDiff = (now - lastClaim) / (1000 * 60 * 60);
+    if (hoursDiff < 2) {
+      showNotification('Подождите 2 часа перед следующим получением', 'error');
+      return;
+    }
+  }
+  
+  const { error } = await db.from('profiles')
+    .update({ 
+      crystals: userProfile.crystals + 5,
+      last_claim_time: now.toISOString()
+    })
+    .eq('id', currentUser.id);
+  
+  if (error) {
+    showNotification('Ошибка при получении кристаллов', 'error');
+    return;
+  }
+  
+  userProfile.crystals += 5;
+  userProfile.last_claim_time = now.toISOString();
+  $('crystalsCount').textContent = userProfile.crystals;
+  updateCrystalsUI();
+  showNotification('+5 кристаллов получено!');
+}
+
+async function claimDaily() {
+  const today = new Date().toDateString();
+  const lastLogin = userProfile.last_login_date ? new Date(userProfile.last_login_date).toDateString() : null;
+  
+  if (lastLogin === today) {
+    showNotification('Вы уже получали награду сегодня', 'error');
+    return;
+  }
+  
+  let streak = userProfile.login_streak || 0;
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  
+  if (lastLogin === yesterday.toDateString()) {
+    streak++;
+  } else {
+    streak = 1;
+  }
+  
+  const weeksCompleted = Math.floor((streak - 1) / 7);
+  const dailyBonus = Math.min(3 + weeksCompleted, 15);
+  
+  const { error } = await db.from('profiles')
+    .update({
+      crystals: userProfile.crystals + dailyBonus,
+      login_streak: streak,
+      last_login_date: new Date().toISOString()
+    })
+    .eq('id', currentUser.id);
+  
+  if (error) {
+    showNotification('Ошибка при получении награды', 'error');
+    return;
+  }
+  
+  userProfile.crystals += dailyBonus;
+  userProfile.login_streak = streak;
+  userProfile.last_login_date = new Date().toISOString();
+  $('crystalsCount').textContent = userProfile.crystals;
+  updateCrystalsUI();
+  showNotification(`+${dailyBonus} кристаллов за ежедневный вход!`);
+}
+
+function updateCrystalsUI() {
+  const now = new Date();
+  const lastClaim = userProfile.last_claim_time ? new Date(userProfile.last_claim_time) : null;
+  
+  if (lastClaim) {
+    const hoursDiff = (now - lastClaim) / (1000 * 60 * 60);
+    if (hoursDiff < 2) {
+      const remaining = 2 - hoursDiff;
+      const minutes = Math.floor(remaining * 60);
+      $('claimTimer').textContent = `Доступно через ${minutes} мин`;
+      $('claimBtn').disabled = true;
+    } else {
+      $('claimTimer').textContent = 'Доступно сейчас';
+      $('claimBtn').disabled = false;
+    }
+  } else {
+    $('claimTimer').textContent = 'Доступно сейчас';
+    $('claimBtn').disabled = false;
+  }
+  
+  const today = now.toDateString();
+  const lastLogin = userProfile.last_login_date ? new Date(userProfile.last_login_date).toDateString() : null;
+  
+  if (lastLogin === today) {
+    $('dailyInfo').textContent = 'Вы уже получили награду сегодня';
+    $('dailyBtn').disabled = true;
+    $('dailyBtn').textContent = 'Получено';
+  } else {
+    const streak = userProfile.login_streak || 0;
+    const weeksCompleted = Math.floor(streak / 7);
+    const nextBonus = Math.min(3 + weeksCompleted, 15);
+    $('dailyInfo').textContent = `Серия входов: ${streak} дней. Награда: +${nextBonus} 💎`;
+    $('dailyBtn').disabled = false;
+    $('dailyBtn').textContent = 'Получить';
+  }
+}
+
+function openCrystalsModal() {
+  $('crystalsModal').classList.add('active');
+  updateCrystalsUI();
+}
+
+function closeCrystalsModal() {
+  $('crystalsModal').classList.remove('active');
+}
+
+function showNotification(text) {
+  const notif = $('notification');
+  notif.textContent = text;
+  notif.classList.add('active');
+  setTimeout(() => notif.classList.remove('active'), 3000);
+}
+
+function openNovel(id) {
+  showNotification('Новелла скоро будет доступна!');
+}
+
+// Обновление таймера каждую минуту
+setInterval(() => {
+  if (currentUser && $('crystalsModal').classList.contains('active')) {
+    updateCrystalsUI();
+  }
+}, 60000);
+
+// Реакция на вход/выход
+db.auth.onAuthStateChange(async (event, session) => {
+  currentUser = session?.user || null;
+  
+  if (currentUser) {
+    $('authPage').style.display = 'none';
+    $('mainPage').style.display = 'block';
+    await loadProfile();
+    
+    // Автоматически проверяем ежедневный бонус
+    const today = new Date().toDateString();
+    const lastLogin = userProfile.last_login_date ? new Date(userProfile.last_login_date).toDateString() : null;
+    if (lastLogin !== today) {
+      setTimeout(() => openCrystalsModal(), 1000);
+    }
+  } else {
+    $('authPage').style.display = 'flex';
+    $('mainPage').style.display = 'none';
+    userProfile = null;
+  }
+});
+</script>
+</body>
+</html>

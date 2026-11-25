@@ -8,13 +8,10 @@
   *{margin:0;padding:0;box-sizing:border-box}
   body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#0a0a0f;color:#e4e4e7;overflow-x:hidden}
   
-  /* Анимации */
   @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
   @keyframes slideIn{from{transform:translateX(-100%)}to{transform:translateX(0)}}
   @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-  @keyframes glow{0%,100%{box-shadow:0 0 20px rgba(139,92,246,.3)}50%{box-shadow:0 0 40px rgba(139,92,246,.6)}}
   
-  /* Страница входа */
   .auth-container{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0a0a0f 0%,#1a1a2e 50%,#16213e 100%);position:relative;overflow:hidden}
   .auth-container::before{content:'';position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(139,92,246,.15) 0%,transparent 70%);top:-200px;right:-200px;animation:pulse 4s ease-in-out infinite}
   .auth-container::after{content:'';position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(59,130,246,.1) 0%,transparent 70%);bottom:-150px;left:-150px;animation:pulse 5s ease-in-out infinite}
@@ -38,7 +35,6 @@
   .message.error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#fca5a5;display:block}
   .message.success{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#86efac;display:block}
   
-  /* Главная страница */
   .main-container{display:none;min-height:100vh;background:#0a0a0f}
   .header{background:rgba(15,15,25,.8);backdrop-filter:blur(20px);border-bottom:1px solid rgba(139,92,246,.2);padding:16px 32px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100}
   .header-logo{font-size:24px;font-weight:700;background:linear-gradient(135deg,#8b5cf6,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
@@ -49,7 +45,6 @@
   .crystals-icon{font-size:20px}
   .crystals-count{font-weight:600;font-size:16px}
   
-  .user-menu{position:relative}
   .user-btn{background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.3);padding:10px 16px;border-radius:12px;color:#e4e4e7;cursor:pointer;font-size:14px;font-weight:500;transition:all .3s}
   .user-btn:hover{background:rgba(139,92,246,.2)}
   
@@ -70,10 +65,9 @@
   .novel-desc{color:#a1a1aa;font-size:14px;line-height:1.5;margin-bottom:12px}
   .novel-meta{display:flex;gap:12px;font-size:13px;color:#8b5cf6}
   
-  /* Модалка кристаллов */
   .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(5px);z-index:1000;align-items:center;justify-content:center;animation:fadeIn .3s}
   .modal-overlay.active{display:flex}
-  .modal{background:rgba(26,26,46,.95);backdrop-filter:blur(20px);border:1px solid rgba(139,92,246,.3);border-radius:24px;padding:32px;max-width:500px;width:90%;animation:fadeIn .3s}
+  .modal{background:rgba(26,26,46,.95);backdrop-filter:blur(20px);border:1px solid rgba(139,92,246,.3);border-radius:24px;padding:32px;max-width:500px;width:90%;animation:fadeIn .3s;position:relative}
   .modal-title{font-size:24px;font-weight:700;margin-bottom:16px;text-align:center}
   .modal-text{color:#a1a1aa;text-align:center;margin-bottom:24px;line-height:1.6}
   
@@ -107,7 +101,6 @@
 </head>
 <body>
 
-<!-- СТРАНИЦА ВХОДА -->
 <div class="auth-container" id="authPage">
   <div class="auth-box">
     <div class="logo">Choice & Chance</div>
@@ -128,14 +121,13 @@
       <input type="text" id="name" placeholder="Как тебя зовут?">
     </div>
     
-    <button class="btn" onclick="signIn()">Войти</button>
-    <button class="btn btn-ghost" onclick="toggleSignUp()">Создать аккаунт</button>
+    <button class="btn" id="submitBtn" onclick="handleSubmit()">Войти</button>
+    <button class="btn btn-ghost" id="toggleBtn" onclick="toggleSignUp()">Создать аккаунт</button>
     
     <div class="message" id="authMessage"></div>
   </div>
 </div>
 
-<!-- ГЛАВНАЯ СТРАНИЦА -->
 <div class="main-container" id="mainPage">
   <div class="header">
     <div class="header-logo">Choice & Chance</div>
@@ -144,9 +136,7 @@
         <span class="crystals-icon">💎</span>
         <span class="crystals-count" id="crystalsCount">0</span>
       </div>
-      <div class="user-menu">
-        <button class="user-btn" onclick="signOut()">Выйти</button>
-      </div>
+      <button class="user-btn" onclick="signOut()">Выйти</button>
     </div>
   </div>
   
@@ -170,9 +160,8 @@
   </div>
 </div>
 
-<!-- МОДАЛКА КРИСТАЛЛОВ -->
 <div class="modal-overlay" id="crystalsModal">
-  <div class="modal" style="position:relative">
+  <div class="modal">
     <button class="close-btn" onclick="closeCrystalsModal()">×</button>
     <div class="modal-title">💎 Кристаллы</div>
     <div class="modal-text">Получайте кристаллы за активность и ежедневный вход</div>
@@ -214,8 +203,17 @@ function showMessage(text, type) {
 function toggleSignUp() {
   isSignUp = !isSignUp;
   $('nameGroup').style.display = isSignUp ? 'block' : 'none';
-  document.querySelector('.btn').textContent = isSignUp ? 'Зарегистрироваться' : 'Войти';
-  document.querySelector('.btn-ghost').textContent = isSignUp ? 'Уже есть аккаунт? Войти' : 'Создать аккаунт';
+  $('submitBtn').textContent = isSignUp ? 'Зарегистрироваться' : 'Войти';
+  $('toggleBtn').textContent = isSignUp ? 'Уже есть аккаунт? Войти' : 'Создать аккаунт';
+  $('authMessage').className = 'message';
+}
+
+function handleSubmit() {
+  if (isSignUp) {
+    signUp();
+  } else {
+    signIn();
+  }
 }
 
 async function signIn() {
@@ -393,14 +391,12 @@ function openNovel(id) {
   showNotification('Новелла скоро будет доступна!');
 }
 
-// Обновление таймера каждую минуту
 setInterval(() => {
   if (currentUser && $('crystalsModal').classList.contains('active')) {
     updateCrystalsUI();
   }
 }, 60000);
 
-// Реакция на вход/выход
 db.auth.onAuthStateChange(async (event, session) => {
   currentUser = session?.user || null;
   
@@ -409,7 +405,6 @@ db.auth.onAuthStateChange(async (event, session) => {
     $('mainPage').style.display = 'block';
     await loadProfile();
     
-    // Автоматически проверяем ежедневный бонус
     const today = new Date().toDateString();
     const lastLogin = userProfile.last_login_date ? new Date(userProfile.last_login_date).toDateString() : null;
     if (lastLogin !== today) {

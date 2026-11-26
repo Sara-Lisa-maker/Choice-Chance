@@ -12,7 +12,6 @@
   @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
   @keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
   @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-  @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
   
   .auth-container{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:20px}
   .auth-container::before{content:'';position:absolute;width:600px;height:600px;background:radial-gradient(circle,rgba(168,85,247,.12) 0%,transparent 70%);top:-200px;right:-200px;animation:pulse 4s ease-in-out infinite}
@@ -52,7 +51,7 @@
   .profile-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(168,85,247,.35)}
   .profile-avatar{width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
   
-  .profile-menu{position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid rgba(168,85,247,.15);border-radius:12px;padding:8px;min-width:200px;box-shadow:0 10px 40px rgba(168,85,247,.15);display:none;animation:fadeIn .2s}
+  .profile-menu{position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid rgba(168,85,247,.15);border-radius:12px;padding:8px;min-width:220px;box-shadow:0 10px 40px rgba(168,85,247,.15);display:none;animation:fadeIn .2s;z-index:101}
   .profile-menu.active{display:block}
   .profile-menu-header{padding:12px;border-bottom:1px solid #f3f4f6;margin-bottom:4px}
   .profile-menu-name{font-weight:600;color:#1a1a2e;font-size:14px}
@@ -63,10 +62,20 @@
   .profile-menu-item.danger:hover{background:rgba(239,68,68,.05)}
   
   .content{max-width:1400px;margin:0 auto;padding:32px}
+  .page{display:none}
+  .page.active{display:block;animation:fadeIn .4s}
+  
+  .search-bar{margin-bottom:24px}
+  .search-input{width:100%;max-width:500px;padding:14px 16px;background:#fff;border:1px solid rgba(168,85,247,.2);border-radius:12px;color:#1a1a2e;font-size:15px;transition:all .3s}
+  .search-input:focus{outline:none;border-color:#a855f7;box-shadow:0 0 0 3px rgba(168,85,247,.1)}
+  
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px}
+  .filter-btn{background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);padding:8px 16px;border-radius:20px;font-size:13px;font-weight:500;color:#7c3aed;cursor:pointer;transition:all .2s}
+  .filter-btn:hover{background:rgba(168,85,247,.15)}
+  .filter-btn.active{background:linear-gradient(135deg,#a855f7,#6366f1);color:#fff;border-color:transparent}
+  
   .section-title{font-size:32px;font-weight:700;margin-bottom:8px;color:#1a1a2e}
-  .section-subtitle{color:#6b7280;font-size:15px;margin-bottom:32px;line-height:1.6;max-width:700px}
-  .genres{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
-  .genre-tag{background:rgba(168,85,247,.1);color:#7c3aed;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:500}
+  .section-subtitle{color:#6b7280;font-size:15px;margin-bottom:32px;line-height:1.6}
   
   .novels-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px}
   .novel-card{background:#fff;border:1px solid rgba(168,85,247,.12);border-radius:16px;overflow:hidden;cursor:pointer;transition:all .3s;animation:fadeIn .6s ease-out;box-shadow:0 4px 20px rgba(168,85,247,.06)}
@@ -89,9 +98,18 @@
   .novel-info{padding:20px}
   .novel-title{font-size:18px;font-weight:700;margin-bottom:8px;color:#1a1a2e}
   .novel-desc{color:#6b7280;font-size:14px;line-height:1.5;margin-bottom:12px}
+  .novel-genres{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+  .genre-tag{background:rgba(168,85,247,.1);color:#7c3aed;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:500}
   .novel-status{display:inline-block;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600}
   .novel-status.available{background:rgba(34,197,94,.1);color:#16a34a}
   .novel-status.locked{background:rgba(107,114,128,.1);color:#6b7280}
+  
+  .back-btn{background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);padding:10px 20px;border-radius:12px;color:#7c3aed;cursor:pointer;font-size:14px;font-weight:600;transition:all .3s;margin-bottom:24px;display:inline-flex;align-items:center;gap:8px}
+  .back-btn:hover{background:rgba(168,85,247,.15)}
+  
+  .novel-header{margin-bottom:32px}
+  .novel-header-title{font-size:36px;font-weight:700;margin-bottom:8px;color:#1a1a2e}
+  .novel-header-desc{color:#6b7280;font-size:16px;line-height:1.6;max-width:700px}
   
   .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(5px);z-index:1000;align-items:center;justify-content:center;animation:fadeIn .3s;padding:20px}
   .modal-overlay.active{display:flex}
@@ -124,12 +142,16 @@
   .notification.success{background:#10b981;color:#fff}
   .notification.error{background:#ef4444;color:#fff}
   
+  .empty-state{text-align:center;padding:60px 20px;color:#6b7280}
+  .empty-state-icon{font-size:64px;margin-bottom:16px;opacity:.5}
+  
   @media(max-width:768px){
     .header{padding:12px 16px;flex-wrap:wrap;gap:12px}
     .content{padding:16px}
     .novels-grid{grid-template-columns:1fr}
     .auth-box{padding:32px 24px;margin:16px}
     .section-title{font-size:24px}
+    .novel-header-title{font-size:28px}
   }
 </style>
 </head>
@@ -164,7 +186,7 @@
 
 <div class="main-container" id="mainPage">
   <div class="header">
-    <div class="header-logo">Choice & Chance</div>
+    <div class="header-logo" onclick="showHomePage()">Choice & Chance</div>
     <div class="header-right">
       <div class="crystals" onclick="openCrystalsModal()">
         <span class="crystals-icon">💎</span>
@@ -192,46 +214,34 @@
   </div>
   
   <div class="content">
-    <h2 class="section-title">Тени Парижа</h2>
-    <p class="section-subtitle">1990 год. Вокруг происходят необъяснимые вещи. Героиня пытается понять и раскрыть тайну, скрытую в тенях города.</p>
-    <div class="genres">
-      <span class="genre-tag">Детектив</span>
-      <span class="genre-tag">Романтика</span>
-      <span class="genre-tag">Мистика</span>
+    <div class="page active" id="homePage">
+      <h2 class="section-title">Выберите новеллу</h2>
+      <p class="section-subtitle">Найдите историю по названию или жанру</p>
+      
+      <div class="search-bar">
+        <input type="text" class="search-input" id="searchInput" placeholder="Поиск по названию..." oninput="filterNovels()">
+      </div>
+      
+      <div class="filters" id="genreFilters">
+        <button class="filter-btn active" onclick="filterByGenre('all')">Все</button>
+        <button class="filter-btn" onclick="filterByGenre('Детектив')">Детектив</button>
+        <button class="filter-btn" onclick="filterByGenre('Романтика')">Романтика</button>
+        <button class="filter-btn" onclick="filterByGenre('Мистика')">Мистика</button>
+        <button class="filter-btn" onclick="filterByGenre('Фэнтези')">Фэнтези</button>
+        <button class="filter-btn" onclick="filterByGenre('Драма')">Драма</button>
+      </div>
+      
+      <div class="novels-grid" id="novelsList"></div>
     </div>
-    <div class="novels-grid">
-      <div class="novel-card" onclick="openNovel('shadows-paris-1')">
-        <div class="novel-cover novel-cover-paris">
-          <span class="season-badge">Сезон 1</span>
-        </div>
-        <div class="novel-info">
-          <div class="novel-title">Сезон 1</div>
-          <div class="novel-desc">Начало истории. Погрузитесь в атмосферу тайн и интриг Парижа 1990-х.</div>
-          <span class="novel-status available">Доступно</span>
-        </div>
+    
+    <div class="page" id="novelPage">
+      <button class="back-btn" onclick="showHomePage()">← Назад к списку</button>
+      <div class="novel-header">
+        <h2 class="novel-header-title" id="novelPageTitle">Название</h2>
+        <p class="novel-header-desc" id="novelPageDesc">Описание</p>
+        <div class="novel-genres" id="novelPageGenres" style="margin-top:16px"></div>
       </div>
-      
-      <div class="novel-card locked" onclick="showLocked(2)">
-        <div class="novel-cover novel-cover-locked">
-          <span class="season-badge locked">Сезон 2</span>
-        </div>
-        <div class="novel-info">
-          <div class="novel-title">Сезон 2</div>
-          <div class="novel-desc">Продолжение истории. Станет доступно после прохождения первого сезона.</div>
-          <span class="novel-status locked">Заблокировано</span>
-        </div>
-      </div>
-      
-      <div class="novel-card locked" onclick="showLocked(3)">
-        <div class="novel-cover novel-cover-locked">
-          <span class="season-badge locked">Сезон 3</span>
-        </div>
-        <div class="novel-info">
-          <div class="novel-title">Сезон 3</div>
-          <div class="novel-desc">Финал истории. Станет доступно после прохождения второго сезона.</div>
-          <span class="novel-status locked">Заблокировано</span>
-        </div>
-      </div>
+      <div class="novels-grid" id="seasonsList"></div>
     </div>
   </div>
 </div>
@@ -269,6 +279,21 @@ let currentUser = null;
 let userProfile = null;
 let isSignUp = false;
 let timerInterval = null;
+let currentFilter = 'all';
+
+const novels = [
+  {
+    id: 'shadows-paris',
+    title: 'Тени Парижа',
+    description: '1990 год. Вокруг происходят необъяснимые вещи. Героиня пытается понять и раскрыть тайну, скрытую в тенях города.',
+    genres: ['Детектив', 'Романтика', 'Мистика'],
+    seasons: [
+      { id: 1, title: 'Сезон 1', description: 'Начало истории. Погрузитесь в атмосферу тайн и интриг Парижа 1990-х.', locked: false },
+      { id: 2, title: 'Сезон 2', description: 'Продолжение истории. Станет доступно после прохождения первого сезона.', locked: true },
+      { id: 3, title: 'Сезон 3', description: 'Финал истории. Станет доступно после прохождения второго сезона.', locked: true }
+    ]
+  }
+];
 
 const $ = id => document.getElementById(id);
 
@@ -344,11 +369,21 @@ document.addEventListener('click', (e) => {
 });
 
 async function loadProfile() {
-  const { data, error } = await db.from('profiles').select('*').eq('id', currentUser.id).single();
-  if (error) {
-    console.error('Error loading profile:', error);
-    return;
+  let { data, error } = await db.from('profiles').select('*').eq('id', currentUser.id).single();
+  
+  if (error || !data) {
+    const { data: newData, error: insertError } = await db.from('profiles').insert([
+      { id: currentUser.id, crystals: 0, login_streak: 0 }
+    ]).select().single();
+    
+    if (insertError) {
+      console.error('Error creating profile:', insertError);
+      showNotification('Ошибка загрузки профиля: ' + insertError.message, 'error');
+      return;
+    }
+    data = newData;
   }
+  
   userProfile = data;
   $('crystalsCount').textContent = userProfile.crystals;
   
@@ -375,19 +410,20 @@ async function claimCrystals() {
     }
   }
   
+  const newCrystals = userProfile.crystals + 5;
   const { error } = await db.from('profiles')
     .update({ 
-      crystals: userProfile.crystals + 5,
+      crystals: newCrystals,
       last_claim_time: now.toISOString()
     })
     .eq('id', currentUser.id);
   
   if (error) {
-    showNotification('Ошибка при получении кристаллов', 'error');
+    showNotification('Ошибка: ' + error.message, 'error');
     return;
   }
   
-  userProfile.crystals += 5;
+  userProfile.crystals = newCrystals;
   userProfile.last_claim_time = now.toISOString();
   $('crystalsCount').textContent = userProfile.crystals;
   updateCrystalsUI();
@@ -415,21 +451,22 @@ async function claimDaily() {
   
   const weeksCompleted = Math.floor((streak - 1) / 7);
   const dailyBonus = Math.min(3 + weeksCompleted, 15);
+  const newCrystals = userProfile.crystals + dailyBonus;
   
   const { error } = await db.from('profiles')
     .update({
-      crystals: userProfile.crystals + dailyBonus,
+      crystals: newCrystals,
       login_streak: streak,
       last_login_date: new Date().toISOString()
     })
     .eq('id', currentUser.id);
   
   if (error) {
-    showNotification('Ошибка при получении награды', 'error');
+    showNotification('Ошибка: ' + error.message, 'error');
     return;
   }
   
-  userProfile.crystals += dailyBonus;
+  userProfile.crystals = newCrystals;
   userProfile.login_streak = streak;
   userProfile.last_login_date = new Date().toISOString();
   $('crystalsCount').textContent = userProfile.crystals;
@@ -527,10 +564,99 @@ function showNotification(text, type = 'success') {
   setTimeout(() => notif.classList.remove('active'), 3000);
 }
 
-function openNovel(id) {
-  if (id === 'shadows-paris-1') {
-    showNotification('Сезон 1 скоро будет доступен!', 'success');
+function renderNovelsList() {
+  const searchQuery = $('searchInput').value.toLowerCase();
+  const container = $('novelsList');
+  container.innerHTML = '';
+  
+  const filtered = novels.filter(novel => {
+    const matchesSearch = novel.title.toLowerCase().includes(searchQuery);
+    const matchesGenre = currentFilter === 'all' || novel.genres.includes(currentFilter);
+    return matchesSearch && matchesGenre;
+  });
+  
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔍</div><div>Ничего не найдено</div></div>';
+    return;
   }
+  
+  filtered.forEach(novel => {
+    const card = document.createElement('div');
+    card.className = 'novel-card';
+    card.onclick = () => openNovel(novel.id);
+    
+    card.innerHTML = `
+      <div class="novel-cover novel-cover-paris"></div>
+      <div class="novel-info">
+        <div class="novel-title">${novel.title}</div>
+        <div class="novel-genres">${novel.genres.map(g => `<span class="genre-tag">${g}</span>`).join('')}</div>
+        <div class="novel-desc">${novel.description}</div>
+      </div>
+    `;
+    
+    container.appendChild(card);
+  });
+}
+
+function filterNovels() {
+  renderNovelsList();
+}
+
+function filterByGenre(genre) {
+  currentFilter = genre;
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.remove('active');
+    if (btn.textContent === (genre === 'all' ? 'Все' : genre)) {
+      btn.classList.add('active');
+    }
+  });
+  renderNovelsList();
+}
+
+function openNovel(novelId) {
+  const novel = novels.find(n => n.id === novelId);
+  if (!novel) return;
+  
+  $('novelPageTitle').textContent = novel.title;
+  $('novelPageDesc').textContent = novel.description;
+  $('novelPageGenres').innerHTML = novel.genres.map(g => `<span class="genre-tag">${g}</span>`).join('');
+  
+  const container = $('seasonsList');
+  container.innerHTML = '';
+  
+  novel.seasons.forEach(season => {
+    const card = document.createElement('div');
+    card.className = 'novel-card' + (season.locked ? ' locked' : '');
+    
+    if (season.locked) {
+      card.onclick = () => showLocked(season.id);
+    } else {
+      card.onclick = () => showNotification('Сезон скоро будет доступен!', 'success');
+    }
+    
+    card.innerHTML = `
+      <div class="novel-cover ${season.locked ? 'novel-cover-locked' : 'novel-cover-paris'}">
+        <span class="season-badge ${season.locked ? 'locked' : ''}">${season.title}</span>
+      </div>
+      <div class="novel-info">
+        <div class="novel-title">${season.title}</div>
+        <div class="novel-desc">${season.description}</div>
+        <span class="novel-status ${season.locked ? 'locked' : 'available'}">${season.locked ? 'Заблокировано' : 'Доступно'}</span>
+      </div>
+    `;
+    
+    container.appendChild(card);
+  });
+  
+  $('homePage').classList.remove('active');
+  $('novelPage').classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function showHomePage() {
+  $('novelPage').classList.remove('active');
+  $('homePage').classList.add('active');
+  renderNovelsList();
 }
 
 function showLocked(season) {
@@ -544,6 +670,7 @@ db.auth.onAuthStateChange(async (event, session) => {
     $('authPage').style.display = 'none';
     $('mainPage').style.display = 'block';
     await loadProfile();
+    renderNovelsList();
     
     const today = new Date().toDateString();
     const lastLogin = userProfile.last_login_date ? new Date(userProfile.last_login_date).toDateString() : null;
